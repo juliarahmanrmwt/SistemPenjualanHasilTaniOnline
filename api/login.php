@@ -28,20 +28,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($result && $result->num_rows === 1) {
             $user = $result->fetch_assoc();
             if (password_verify($password, $user['password'])) {
-                $_SESSION['login']         = true;
-                $_SESSION['user_id']       = $user['id'];
-                $_SESSION['nama']          = $user['nama_lengkap'];
-                $_SESSION['role']          = $user['role'];
-                $_SESSION['last_activity'] = time();
+    $_SESSION['login']         = true;
+    $_SESSION['user_id']       = $user['id'];
+    $_SESSION['nama']          = $user['nama_lengkap'];
+    $_SESSION['role']          = $user['role'];
+    $_SESSION['last_activity'] = time();
 
-                // PERBAIKAN: Gunakan absolute path /
-                if ($user['role'] === 'admin') {
-                    header("Location: /admin_dashboard.php");
-                } else {
-                    header("Location: /dashboard.php");
-                }
-                exit;
-            } else {
+    // PERBAIKAN: Gunakan rute baru tanpa .php
+    if ($user['role'] === 'admin') {
+        header("Location: /admin/dashboard");
+    } else {
+        header("Location: /user/dashboard");
+    }
+    exit;
+} else {
                 $error = 'Password salah.';
             }
         } else {
