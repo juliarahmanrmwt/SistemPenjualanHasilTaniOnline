@@ -36,11 +36,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // PERBAIKAN: Gunakan rute baru tanpa .php
     if ($user['role'] === 'admin') {
-        header("Location: /admin/dashboard");
-    } else {
-        header("Location: /user/dashboard");
-    }
-    exit;
+                    header("Location: /admin/dashboard"); // <-- UBAH DI SINI
+                } else {
+                    header("Location: /user/dashboard");  // <-- UBAH DI SINI
+                }
+                exit;
 } else {
                 $error = 'Password salah.';
             }

@@ -9,7 +9,7 @@ if (session_status() === PHP_SESSION_NONE) {
 // ── Cek apakah sudah login ────────────────────────────
 if (!isset($_SESSION['login']) || $_SESSION['login'] !== true) {
     // Belum login → redirect ke halaman login
-    header("Location: login.php");
+    header("Location: /login");
     exit;
 }
 
@@ -20,7 +20,7 @@ if (isset($_SESSION['last_activity'])) {
         // Session kedaluwarsa → hancurkan dan redirect
         session_unset();
         session_destroy();
-        header("Location: login.php?timeout=1");
+        header("Location: /login?timeout=1"); // <-- UBAH DI SINI
         exit;
     }
 }

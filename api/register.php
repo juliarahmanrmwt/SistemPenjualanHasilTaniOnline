@@ -3,7 +3,7 @@ ini_set('session.save_path', '/tmp');
 if (session_status() === PHP_SESSION_NONE) session_start();
 
 if (isset($_SESSION['login']) && $_SESSION['login'] === true) {
-    header("Location: /dashboard.php");
+    header("Location: /user/dashboard"); // <-- UBAH DI SINI (baris atas)
     exit;
 }
 
@@ -41,7 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt = $koneksi->prepare("INSERT INTO users (nama_lengkap, email, password, role) VALUES (?, ?, ?, ?)");
             $stmt->bind_param("ssss", $nama, $email, $hash, $role);
             if ($stmt->execute()) {
-                $success = 'Akun berhasil dibuat! <a href="/login" class="alert-link">Masuk sekarang</a>.';
+                $success = 'Akun berhasil dibuat! <a href="/login" class="alert-link">Masuk sekarang</a>.'; // <-- UBAH DI SINI
             } else {
                 $error = 'Gagal membuat akun: ' . $koneksi->error;
             }
