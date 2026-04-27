@@ -2,13 +2,17 @@
 ini_set('session.save_path', '/tmp');
 if (session_status() === PHP_SESSION_NONE) session_start();
 
+// PERBAIKAN 1: Cek session aktif dan arahkan ke rute yang benar sesuai role
 if (isset($_SESSION['login']) && $_SESSION['login'] === true) {
-    header("Location: /dashboard.php");
+    if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') {
+        header("Location: /admin/dashboard");
+    } else {
+        header("Location: /user/dashboard");
+    }
     exit;
 }
 
-// PERBAIKAN: Mundur 1 folder ke root untuk mengambil koneksi.php
-require_once __DIR__ . '/koneksi.php'; // Kembali seperti semula
+require_once __DIR__ . '/koneksi.php'; 
 
 $error   = '';
 $timeout = isset($_GET['timeout']);
@@ -28,20 +32,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($result && $result->num_rows === 1) {
             $user = $result->fetch_assoc();
             if (password_verify($password, $user['password'])) {
-    $_SESSION['login']         = true;
-    $_SESSION['user_id']       = $user['id'];
-    $_SESSION['nama']          = $user['nama_lengkap'];
-    $_SESSION['role']          = $user['role'];
-    $_SESSION['last_activity'] = time();
+                $_SESSION['login']         = true;
+                $_SESSION['user_id']       = $user['id'];
+                $_SESSION['nama']          = $user['nama_lengkap'];
+                $_SESSION['role']          = $user['role'];
+                $_SESSION['last_activity'] = time();
 
-    // PERBAIKAN: Gunakan rute baru tanpa .php
-    if ($user['role'] === 'admin') {
-                    header("Location: /admin/dashboard"); // <-- UBAH DI SINI
+                // PERBAIKAN 2: Arahkan ke rute baru tanpa .php setelah berhasil login
+                if ($user['role'] === 'admin') {
+                    header("Location: /admin/dashboard"); 
                 } else {
-                    header("Location: /user/dashboard");  // <-- UBAH DI SINI
+                    header("Location: /user/dashboard");  
                 }
                 exit;
-} else {
+            } else {
                 $error = 'Password salah.';
             }
         } else {
