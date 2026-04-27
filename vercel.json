@@ -1,23 +1,56 @@
 {
-  "builds": [
-    {
-      "src": "api/*.php",
-      "use": "vercel-php@0.9.0"
+    "functions": {
+        "api/**/*.php": {
+            "runtime": "vercel-php@0.9.0"
+        }
     },
-    {
-      "src": "*.php",
-      "use": "vercel-php@0.9.0"
-    },
-    {
-      "src": "index.html",
-      "use": "@vercel/static"
-    }
-  ],
-  "routes": [
-    { "src": "/login", "dest": "/api/login.php" },
-    { "src": "/register", "dest": "/api/register.php" },
-    { "src": "/logout", "dest": "/api/logout.php" },
-    { "handle": "filesystem" },
-    { "src": "/(.*)", "dest": "/$1" }
-  ]
+    "routes": [
+        { 
+            "handle": "filesystem" 
+        },
+        {
+            "src": "^/$",
+            "dest": "/api/index.php"
+        },
+        {
+            "src": "^/login$",
+            "dest": "/api/login.php"
+        },
+        {
+            "src": "^/register$",
+            "dest": "/api/register.php"
+        },
+        {
+            "src": "^/logout$",
+            "dest": "/api/logout.php"
+        },
+        {
+            "src": "^/proses_aksi$",
+            "dest": "/api/proses_aksi.php"
+        },
+        {
+            "src": "^/beli$",
+            "dest": "/api/beli.php"
+        },
+        {
+            "src": "^/api_bps$",
+            "dest": "/api/api_bps.php"
+        },
+        {
+            "src": "^/admin/dashboard$",
+            "dest": "/api/admin/dashboard.php"
+        },
+        {
+            "src": "^/admin/tambah_user$",
+            "dest": "/api/admin/tambah_user.php"
+        },
+        {
+            "src": "^/admin/edit_user$",
+            "dest": "/api/admin/edit_user.php"
+        },
+        {
+            "src": "^/user/dashboard$",
+            "dest": "/api/user/dashboard.php"
+        }
+    ]
 }

@@ -1,12 +1,12 @@
 <?php
-require_once __DIR__ . '/auth_check.php';
+require_once dirname(__DIR__) . '/auth_check.php';
 
 if (!isset($_SESSION['login']) || $_SESSION['role'] !== 'admin') {
     header("Location: login.php");
     exit;
 }
 
-include 'koneksi.php';
+include dirname(__DIR__) . '/koneksi.php';
 
 // Pastikan menggunakan variabel koneksi yang benar dari file koneksi.php
 $db = isset($koneksi) ? $koneksi : $conn;

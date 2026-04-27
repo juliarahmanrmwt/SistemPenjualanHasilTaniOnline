@@ -1,6 +1,6 @@
 <?php
-require_once __DIR__ . '/auth_check.php';
-require_once __DIR__ . '/koneksi.php';
+require_once dirname(__DIR__) . '/auth_check.php';
+require_once dirname(__DIR__) . '/koneksi.php';
 
 $namaUser = $_SESSION['nama'];
 
@@ -75,7 +75,7 @@ if (file_exists($fileBps)) {
                         <small class="text-success fw-bold text-uppercase">Bumbu</small>
                         <h5 class="card-title">Cabai Merah Segar</h5>
                         <p class="card-text text-danger fw-bold">Rp 18.000</p>
-                        <form action="beli.php" method="POST" class="mt-auto">
+                        <form action="/beli" method="POST" class="mt-auto">
                             <input type="hidden" name="nama_produk" value="Cabai Merah Segar">
                             <input type="hidden" name="harga" value="18000">
                             <button type="submit" name="proses_beli" class="btn btn-success w-100 rounded-pill">Beli Sekarang</button>
