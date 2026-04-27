@@ -3,11 +3,12 @@ ini_set('session.save_path', '/tmp');
 if (session_status() === PHP_SESSION_NONE) session_start();
 
 if (isset($_SESSION['login']) && $_SESSION['login'] === true) {
-    header("Location: dashboard.php");
+    header("Location: /dashboard.php");
     exit;
 }
 
-require_once __DIR__ . '/koneksi.php';
+// PERBAIKAN: Mundur 1 folder ke root untuk mengambil koneksi.php
+require_once dirname(__DIR__) . '/koneksi.php';
 
 $error   = '';
 $timeout = isset($_GET['timeout']);
@@ -33,11 +34,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $_SESSION['role']          = $user['role'];
                 $_SESSION['last_activity'] = time();
 
-                // Arahkan berdasarkan role
+                // PERBAIKAN: Gunakan absolute path /
                 if ($user['role'] === 'admin') {
-                    header("Location: admin_dashboard.php");
+                    header("Location: /admin_dashboard.php");
                 } else {
-                    header("Location: dashboard.php");
+                    header("Location: /dashboard.php");
                 }
                 exit;
             } else {
@@ -88,7 +89,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <button type="submit" class="btn btn-success w-100 rounded-pill fw-semibold">Masuk</button>
     </form>
     <hr>
-    <p class="text-center small mb-0">Belum punya akun? <a href="register.php" class="text-success fw-semibold">Daftar</a></p>
+    <p class="text-center small mb-0">Belum punya akun? <a href="/register" class="text-success fw-semibold">Daftar</a></p>
   </div>
 </div>
 </body>

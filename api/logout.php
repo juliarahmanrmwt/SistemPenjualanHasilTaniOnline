@@ -5,6 +5,7 @@ if (session_status() === PHP_SESSION_NONE) session_start();
 session_unset();
 session_destroy();
 
-header("Location: login.php");
+// PERBAIKAN: Arahkan ke root /login (sesuai vercel.json)
+header("Location: /login");
 exit;
 ?>

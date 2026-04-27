@@ -3,11 +3,12 @@ ini_set('session.save_path', '/tmp');
 if (session_status() === PHP_SESSION_NONE) session_start();
 
 if (isset($_SESSION['login']) && $_SESSION['login'] === true) {
-    header("Location: dashboard.php");
+    header("Location: /dashboard.php");
     exit;
 }
 
-require_once __DIR__ . '/koneksi.php';
+// PERBAIKAN: Mundur 1 folder
+require_once dirname(__DIR__) . '/koneksi.php';
 
 $error   = '';
 $success = '';
@@ -40,7 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt = $koneksi->prepare("INSERT INTO users (nama_lengkap, email, password, role) VALUES (?, ?, ?, ?)");
             $stmt->bind_param("ssss", $nama, $email, $hash, $role);
             if ($stmt->execute()) {
-                $success = 'Akun berhasil dibuat! <a href="login.php" class="alert-link">Masuk sekarang</a>.';
+                $success = 'Akun berhasil dibuat! <a href="/login" class="alert-link">Masuk sekarang</a>.';
             } else {
                 $error = 'Gagal membuat akun: ' . $koneksi->error;
             }
@@ -96,7 +97,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <button type="submit" class="btn btn-success w-100 rounded-pill fw-semibold">Daftar</button>
     </form>
     <hr>
-    <p class="text-center small mb-0">Sudah punya akun? <a href="login.php" class="text-success fw-semibold">Masuk</a></p>
+    <p class="text-center small mb-0">Sudah punya akun? <a href="/login" class="text-success fw-semibold">Masuk</a></p>
   </div>
 </div>
 </body>
