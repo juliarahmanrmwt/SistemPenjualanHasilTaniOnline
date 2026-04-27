@@ -5,7 +5,9 @@ if (session_status() === PHP_SESSION_NONE) session_start();
 session_unset();
 session_destroy();
 
-// PERBAIKAN: Arahkan ke root /login (sesuai vercel.json)
+// Hapus Cookie Vercel
+setcookie('user_session', '', time() - 3600, "/");
+
 header("Location: /login");
 exit;
 ?>

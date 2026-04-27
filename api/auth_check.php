@@ -1,31 +1,41 @@
 <?php
 ini_set('session.save_path', '/tmp');
-
-// Mulai session hanya jika belum aktif
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// ── Cek apakah sudah login ────────────────────────────
+// --- SOLUSI KHUSUS VERCEL SERVERLESS SESSION ---
+$secret = 'petanigenz_rahasia_123'; // Kunci enkripsi
+if (isset($_COOKIE['user_session'])) {
+    $parts = explode('|', $_COOKIE['user_session']);
+    if (count($parts) === 2) {
+        list($data, $signature) = $parts;
+        if (hash_hmac('sha256', $data, $secret) === $signature) {
+            $_SESSION = json_decode($data, true);
+        }
+    }
+}
+// -----------------------------------------------
+
 if (!isset($_SESSION['login']) || $_SESSION['login'] !== true) {
-    // Belum login → redirect ke halaman login
     header("Location: /login");
     exit;
 }
 
-// ── Cek session timeout (2 jam tidak aktif) ───────────
-$timeout = 7200; // 2 jam dalam detik
+$timeout = 7200; // 2 jam
 if (isset($_SESSION['last_activity'])) {
     if ((time() - $_SESSION['last_activity']) > $timeout) {
-        // Session kedaluwarsa → hancurkan dan redirect
         session_unset();
         session_destroy();
-        header("Location: /login?timeout=1"); // <-- UBAH DI SINI
+        setcookie('user_session', '', time() - 3600, "/");
+        header("Location: /login?timeout=1");
         exit;
     }
 }
-
-// Perbarui waktu aktivitas terakhir
 $_SESSION['last_activity'] = time();
 
-// ── Selesai. Halaman boleh dilanjutkan ────────────────
+// Perbarui cookie agar sesi tetap hidup
+$data = json_encode($_SESSION);
+$signature = hash_hmac('sha256', $data, $secret);
+setcookie('user_session', $data . '|' . $signature, time() + 7200, "/");
+?>

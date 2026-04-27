@@ -2,7 +2,19 @@
 ini_set('session.save_path', '/tmp');
 if (session_status() === PHP_SESSION_NONE) session_start();
 
-// PERBAIKAN 1: Cek session aktif dan arahkan ke rute yang benar sesuai role
+// Cek Cookie Vercel Serverless
+$secret = 'petanigenz_rahasia_123';
+if (isset($_COOKIE['user_session'])) {
+    $parts = explode('|', $_COOKIE['user_session']);
+    if (count($parts) === 2) {
+        list($data, $signature) = $parts;
+        if (hash_hmac('sha256', $data, $secret) === $signature) {
+            $_SESSION = json_decode($data, true);
+        }
+    }
+}
+
+// Redirect jika sudah login
 if (isset($_SESSION['login']) && $_SESSION['login'] === true) {
     if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') {
         header("Location: /admin/dashboard");
@@ -38,7 +50,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $_SESSION['role']          = $user['role'];
                 $_SESSION['last_activity'] = time();
 
-                // PERBAIKAN 2: Arahkan ke rute baru tanpa .php setelah berhasil login
+                // --- SET COOKIE UNTUK VERCEL ---
+                $data = json_encode($_SESSION);
+                $signature = hash_hmac('sha256', $data, $secret);
+                setcookie('user_session', $data . '|' . $signature, time() + 7200, "/");
+
                 if ($user['role'] === 'admin') {
                     header("Location: /admin/dashboard"); 
                 } else {

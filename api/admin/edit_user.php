@@ -6,6 +6,16 @@ if (!isset($_SESSION['login']) || $_SESSION['role'] !== 'admin') {
     header("Location: /login"); 
     exit; 
 }
+
+// FIX: Ambil data user dari database sebelum menampilkannya
+$id = $_GET['id'] ?? '';
+$query = mysqli_query($conn, "SELECT * FROM users WHERE id='$id'");
+$u = mysqli_fetch_assoc($query);
+
+if (!$u) {
+    header("Location: /admin/dashboard");
+    exit;
+}
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -22,7 +32,7 @@ if (!isset($_SESSION['login']) || $_SESSION['role'] !== 'admin') {
                         <h5 class="mb-0">Edit Data User</h5>
                     </div>
                     <div class="card-body p-4">
-                        <form action="../api/proses_aksi.php" method="POST">
+                        <form action="/proses_aksi" method="POST">
                             <input type="hidden" name="id" value="<?= $u['id']; ?>">
                             <div class="mb-3">
                                  <label class="form-label">Nama Lengkap</label>

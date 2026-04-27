@@ -44,7 +44,7 @@ if (!isset($_SESSION['login']) || $_SESSION['role'] !== 'admin') {
                             </div>
                             <hr>
                             <button type="submit" name="tambah_user" class="btn btn-success w-100">Simpan User</button>
-                            <a href="admin_dashboard.php" class="btn btn-light w-100 mt-2">Kembali</a>
+                            <a href="/admin/dashboard" class="btn btn-light w-100 mt-2">Kembali</a>
                         </form>
                     </div>
                 </div>
