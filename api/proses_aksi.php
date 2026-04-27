@@ -1,7 +1,6 @@
 <?php
-session_start();
-
-include 'koneksi.php'; 
+require_once __DIR__ . '/auth_check.php';
+require_once __DIR__ . '/koneksi.php'; 
 
 if (!isset($_SESSION['login']) || $_SESSION['role'] !== 'admin') { 
     exit("Akses Ditolak"); 
@@ -15,13 +14,8 @@ if (isset($_POST['tambah_user'])) {
     $pass  = password_hash($_POST['password'], PASSWORD_DEFAULT);
 
     $sql = "INSERT INTO users (nama_lengkap, email, password, role) VALUES ('$nama', '$email', '$pass', '$role')";
-    
     if (mysqli_query($conn, $sql)) {
-        // PERBAIKAN: Arahkan ke root /admin_dashboard.php
-        header("Location: /admin_dashboard.php?status=sukses_tambah");
-        exit;
-    } else {
-        echo "Error: " . mysqli_error($conn);
+        header("Location: /admin/dashboard?status=sukses_tambah"); exit;
     }
 }
 
@@ -33,13 +27,8 @@ if (isset($_POST['edit_user'])) {
     $role  = $_POST['role'];
 
     $sql = "UPDATE users SET nama_lengkap='$nama', email='$email', role='$role' WHERE id='$id'";
-    
     if (mysqli_query($conn, $sql)) {
-        // PERBAIKAN: Arahkan ke root /admin_dashboard.php
-        header("Location: /admin_dashboard.php?status=sukses_edit");
-        exit;
-    } else {
-        echo "Error: " . mysqli_error($conn);
+        header("Location: /admin/dashboard?status=sukses_edit"); exit;
     }
 }
 
@@ -47,8 +36,20 @@ if (isset($_POST['edit_user'])) {
 if (isset($_GET['hapus_user'])) {
     $id = mysqli_real_escape_string($conn, $_GET['hapus_user']);
     mysqli_query($conn, "DELETE FROM users WHERE id='$id'");
-    // PERBAIKAN: Arahkan ke root /admin_dashboard.php
-    header("Location: /admin_dashboard.php?status=sukses_hapus");
-    exit;
+    header("Location: /admin/dashboard?status=sukses_hapus"); exit;
+}
+
+// --- PROSES SELESAIKAN PESANAN (BARU) ---
+if (isset($_GET['selesai_pesanan'])) {
+    $id = mysqli_real_escape_string($conn, $_GET['selesai_pesanan']);
+    mysqli_query($conn, "UPDATE pesanan SET status='Selesai' WHERE id_pesanan='$id'");
+    header("Location: /admin/dashboard?status=pesanan_update"); exit;
+}
+
+// --- PROSES HAPUS PESANAN (BARU) ---
+if (isset($_GET['hapus_pesanan'])) {
+    $id = mysqli_real_escape_string($conn, $_GET['hapus_pesanan']);
+    mysqli_query($conn, "DELETE FROM pesanan WHERE id_pesanan='$id'");
+    header("Location: /admin/dashboard?status=pesanan_hapus"); exit;
 }
 ?>

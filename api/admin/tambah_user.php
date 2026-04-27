@@ -1,7 +1,11 @@
 <?php
-require_once __DIR__ . '/auth_check.php';
+require_once dirname(__DIR__) . '/auth_check.php';
+require_once dirname(__DIR__) . '/koneksi.php';
 
-if (!isset($_SESSION['login']) || $_SESSION['role'] !== 'admin') { header("Location: login.php"); exit; }
+if (!isset($_SESSION['login']) || $_SESSION['role'] !== 'admin') { 
+    header("Location: /login"); 
+    exit; 
+}
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -18,7 +22,7 @@ if (!isset($_SESSION['login']) || $_SESSION['role'] !== 'admin') { header("Locat
                         <h5 class="mb-0">Tambah User Baru</h5>
                     </div>
                     <div class="card-body p-4">
-                        <form action="../api/proses_aksi.php" method="POST">
+                        <form action="/proses_aksi" method="POST">
                             <div class="mb-3">
                                 <label class="form-label">Nama Lengkap</label>
                                 <input type="text" name="nama_lengkap" class="form-control" placeholder="Masukkan nama" required>

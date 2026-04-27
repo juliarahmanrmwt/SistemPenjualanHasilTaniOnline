@@ -1,14 +1,11 @@
 <?php
-require_once __DIR__ . '/auth_check.php';
+require_once dirname(__DIR__) . '/auth_check.php';
+require_once dirname(__DIR__) . '/koneksi.php';
 
-include 'koneksi.php';
-if (!isset($_SESSION['login']) || $_SESSION['role'] !== 'admin') { header("Location: login.php"); exit; }
-
-$id = $_GET['id'];
-$query = mysqli_query($conn, "SELECT * FROM users WHERE id = '$id'");
-$u = mysqli_fetch_assoc($query);
-
-if (!$u) { header("Location: admin_dashboard.php"); exit; }
+if (!isset($_SESSION['login']) || $_SESSION['role'] !== 'admin') { 
+    header("Location: /login"); 
+    exit; 
+}
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -47,7 +44,7 @@ if (!$u) { header("Location: admin_dashboard.php"); exit; }
                             </div>
                             <hr>
                             <button type="submit" name="edit_user" class="btn btn-warning w-100">Update Data</button>
-                            <a href="admin_dashboard.php" class="btn btn-light w-100 mt-2">Batal</a>
+                            <a href="/admin/dashboard" class="btn btn-light w-100 mt-2">Batal</a>
                         </form>
                     </div>
                 </div>

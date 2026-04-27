@@ -2,11 +2,12 @@
 require_once __DIR__ . '/auth_check.php';
 
 if (!isset($_SESSION['login'])) { 
-    header("Location: login.php"); 
+    header("Location: /login"); 
     exit; 
 }
 
-include '../api/ambil_bps.php';
+// Perbaikan Path
+include __DIR__ . '/ambil_bps.php';
 $res = getDataBPSFull();
 ?>
 
@@ -24,7 +25,9 @@ $res = getDataBPSFull();
     <nav class="navbar navbar-expand-lg navbar-dark bg-success shadow-sm mb-4">
         <div class="container">
             <a class="navbar-brand fw-bold" href="dashboard.php">
-                <i class="bi bi-arrow-left"></i> Kembali
+                <a class="navbar-brand fw-bold" href="/user/dashboard">
+    <i class="bi bi-arrow-left"></i> Kembali
+</a>
             </a>
             <span class="navbar-text text-white">Data Indeks Statistik BPS</span>
         </div>

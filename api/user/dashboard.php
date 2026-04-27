@@ -4,12 +4,11 @@ require_once dirname(__DIR__) . '/koneksi.php';
 
 $namaUser = $_SESSION['nama'];
 
-// Periksa apakah file BPS ada sebelum dipanggil
-$fileBps = __DIR__ . '/ambil_bps.php';
+// Perbaikan Path dan Nama Fungsi API BPS
+$fileBps = dirname(__DIR__) . '/ambil_bps.php';
 if (file_exists($fileBps)) {
     include_once $fileBps;
-    // Cek apakah fungsinya ada
-    $statusBPS = function_exists('getStatistikBPS') ? getStatistikBPS('54') : false;
+    $statusBPS = function_exists('getDataBPSFull') ? true : false;
 } else {
     $statusBPS = false;
 }
@@ -34,16 +33,16 @@ if (file_exists($fileBps)) {
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-success sticky-top shadow-sm">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="dashboard.php">Petani GenZ</a>
+            <a class="navbar-brand fw-bold" href="/user/dashboard">Petani GenZ</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
             
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
-                    <li class="nav-item"><a class="nav-link active" href="dashboard.php">Home</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="/user/dashboard">Home</a></li>
                     <li class="nav-item">
-                        <a class="nav-link" href="api_bps.php"><i class="bi bi-table"></i> Statistik BPS</a>
+                        <a class="nav-link" href="/api_bps"><i class="bi bi-table"></i> Statistik BPS</a>
                     </li>
                 </ul>
                 
@@ -53,19 +52,12 @@ if (file_exists($fileBps)) {
                         <?= $statusBPS ? "<span class='text-warning fw-bold'>Online</span>" : "<span class='text-light opacity-75'>Offline</span>"; ?>
                     </div>
                     <span class="text-white me-3 d-none d-lg-inline">Halo, <strong><?= htmlspecialchars($namaUser); ?></strong>!</span>
-                    <a href="logout.php" class="btn btn-outline-light btn-sm rounded-pill">Keluar</a>
+                    <a href="/logout" class="btn btn-outline-light btn-sm rounded-pill">Keluar</a>
                 </div>
             </div>
         </div>
     </nav>
 
-    <header class="bg-success-subtle py-5 text-center">
-        <div class="container">
-            <h1 class="display-5 fw-bold text-success">Pasar Tani Digital</h1>
-            <p class="lead">Produk segar langsung dari tangan petani lokal untuk <strong><?= htmlspecialchars($namaUser); ?></strong>.</p>
-        </div>
-    </header>
-        
     <main class="container my-5">
         <div class="row g-4">
             <div class="col-12 col-md-6 col-lg-3">
@@ -90,7 +82,7 @@ if (file_exists($fileBps)) {
                         <small class="text-success fw-bold text-uppercase">Sayuran</small>
                         <h5 class="card-title">Tomat Merah</h5>
                         <p class="card-text text-danger fw-bold">Rp 18.000</p>
-                        <form action="beli.php" method="POST" class="mt-auto">
+                        <form action="/beli" method="POST" class="mt-auto">
                             <input type="hidden" name="nama_produk" value="Tomat Merah">
                             <input type="hidden" name="harga" value="18000">
                             <button type="submit" name="proses_beli" class="btn btn-success w-100 rounded-pill">Beli Sekarang</button>
@@ -98,13 +90,11 @@ if (file_exists($fileBps)) {
                     </div>
                 </div>
             </div>
-            </div> 
+        </div> 
     </main>
 
     <footer class="text-center py-4 text-muted border-top">
         <small>&copy; 2026 Petani GenZ - Dashboard Pengguna</small>
     </footer>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

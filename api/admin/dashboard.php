@@ -52,12 +52,12 @@ $pesananPending = ($resPending) ? mysqli_num_rows($resPending) : 0;
                 <small class="text-muted">Administrator</small>
             </div>
             <ul class="nav flex-column">
-                <li class="nav-item"><a class="nav-link active" href="admin_dashboard.php"><i class="bi bi-speedometer2 me-2"></i> Dashboard</a></li>
-                <li class="nav-item"><a class="nav-link" href="#kelola-user"><i class="bi bi-people me-2"></i> Kelola User</a></li>
-                <li class="nav-item"><a class="nav-link" href="#kelola-pesanan"><i class="bi bi-cart-check me-2"></i> Kelola Pesanan</a></li>
-                <hr class="mx-3 text-secondary">
-                <li class="nav-item"><a class="nav-link text-danger" href="logout.php"><i class="bi bi-box-arrow-right me-2"></i> Keluar</a></li>
-            </ul>
+    <li class="nav-item"><a class="nav-link active" href="/admin/dashboard"><i class="bi bi-speedometer2 me-2"></i> Dashboard</a></li>
+    <li class="nav-item"><a class="nav-link" href="#kelola-user"><i class="bi bi-people me-2"></i> Kelola User</a></li>
+    <li class="nav-item"><a class="nav-link" href="#kelola-pesanan"><i class="bi bi-cart-check me-2"></i> Kelola Pesanan</a></li>
+    <hr class="mx-3 text-secondary">
+    <li class="nav-item"><a class="nav-link text-danger" href="/logout"><i class="bi bi-box-arrow-right me-2"></i> Keluar</a></li>
+</ul>
         </nav>
 
         <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 main-content">
@@ -113,7 +113,9 @@ $pesananPending = ($resPending) ? mysqli_num_rows($resPending) : 0;
             <div class="table-container shadow-sm" id="kelola-user">
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <h5 class="fw-bold mb-0 text-success"><i class="bi bi-people-fill me-2"></i> Kelola User</h5>
-                    <a href="tambah_user.php" class="btn btn-success btn-sm px-3 rounded-pill"><i class="bi bi-plus-lg me-1"></i> Tambah User</a>
+                   <a href="/admin/tambah_user" class="btn btn-success btn-sm px-3 rounded-pill"><i class="bi bi-plus-lg me-1"></i> Tambah User</a>
+<a href="/admin/edit_user?id=<?= $u['id']; ?>" class="btn btn-outline-warning btn-sm me-1"><i class="bi bi-pencil-square"></i></a>
+<a href="/proses_aksi?hapus_user=<?= $u['id']; ?>" onclick="return confirm('Hapus user ini?')" class="btn btn-outline-danger btn-sm"><i class="bi bi-trash"></i></a>
                 </div>
                 <div class="table-responsive">
                     <table class="table table-hover align-middle">
@@ -177,9 +179,9 @@ $pesananPending = ($resPending) ? mysqli_num_rows($resPending) : 0;
                                 </td>
                                 <td class="text-center">
                                     <?php if($p['status'] == 'Proses') : ?>
-                                        <a href="proses_aksi.php?selesai_pesanan=<?= $p['id_pesanan']; ?>" class="btn btn-success btn-sm me-1">Selesaikan</a>
-                                    <?php endif; ?>
-                                    <a href="proses_aksi.php?hapus_pesanan=<?= $p['id_pesanan']; ?>" onclick="return confirm('Hapus riwayat?')" class="btn btn-outline-danger btn-sm"><i class="bi bi-trash"></i></a>
+    <a href="/proses_aksi?selesai_pesanan=<?= $p['id_pesanan']; ?>" class="btn btn-success btn-sm me-1">Selesaikan</a>
+<?php endif; ?>
+<a href="/proses_aksi?hapus_pesanan=<?= $p['id_pesanan']; ?>" onclick="return confirm('Hapus riwayat?')" class="btn btn-outline-danger btn-sm"><i class="bi bi-trash"></i></a>
                                 </td>
                             </tr>
                             <?php endwhile; } ?>
