@@ -14,8 +14,12 @@ if (isset($_POST['proses_beli'])) {
     $harga = mysqli_real_escape_string($conn, $_POST['harga']);
     $status = "Proses";
 
-    $query = "INSERT INTO pesanan (nama_pembeli, nama_produk, harga, status) 
-              VALUES ('$nama_user', '$nama_produk', '$harga', '$status')";
+    // PERBAIKAN: Membuat ID Pesanan berupa angka acak 6 digit karena database tidak Auto Increment
+    $id_pesanan_baru = rand(100000, 999999);
+
+    // PERBAIKAN: Memasukkan variabel $id_pesanan_baru ke dalam query SQL
+    $query = "INSERT INTO pesanan (id_pesanan, nama_pembeli, nama_produk, harga, status) 
+              VALUES ('$id_pesanan_baru', '$nama_user', '$nama_produk', '$harga', '$status')";
 
     if (mysqli_query($conn, $query)) {
         echo "<script>
