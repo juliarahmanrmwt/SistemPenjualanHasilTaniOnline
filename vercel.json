@@ -21,7 +21,7 @@
             "dest": "/api/register.php"
         },
         {
-            "src": "^/logout$",
+            "src": "^/user/logout$",
             "dest": "/api/user/logout.php"
         },
         {
