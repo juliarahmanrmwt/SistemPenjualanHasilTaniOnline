@@ -22,7 +22,7 @@
         },
         {
             "src": "^/user/logout$",
-            "dest": "/api/user/logout.php"
+            "dest": "/api/logout.php"
         },
         {
             "src": "^/proses_aksi$",
