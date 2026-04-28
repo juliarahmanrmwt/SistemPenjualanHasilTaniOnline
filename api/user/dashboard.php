@@ -52,7 +52,7 @@ if (file_exists($fileBps)) {
                         <?= $statusBPS ? "<span class='text-warning fw-bold'>Online</span>" : "<span class='text-light opacity-75'>Offline</span>"; ?>
                     </div>
                     <span class="text-white me-3 d-none d-lg-inline">Halo, <strong><?= htmlspecialchars($namaUser); ?></strong>!</span>
-                    <a href="../logout.php" class="btn btn-outline-light btn-sm rounded-pill">Keluar</a>
+                    <a href="/logout.php" class="btn btn-outline-light btn-sm rounded-pill">Keluar</a>
                 </div>
             </div>
         </div>
