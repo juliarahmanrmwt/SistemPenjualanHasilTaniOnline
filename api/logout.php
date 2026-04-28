@@ -5,8 +5,9 @@ if (session_status() === PHP_SESSION_NONE) session_start();
 session_unset();
 session_destroy();
 
+setcookie('PHPSESSID', '', time() - 3600, "/");
 setcookie('user_session', '', time() - 3600, "/");
 
-header("Location: /login.php");
+header("Location: /login");
 exit;
 ?>
