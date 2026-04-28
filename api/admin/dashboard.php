@@ -55,7 +55,7 @@ $pesananPending = ($resPending) ? mysqli_num_rows($resPending) : 0;
                 <li class="nav-item"><a class="nav-link" href="#kelola-user"><i class="bi bi-people me-2"></i> Kelola User</a></li>
                 <li class="nav-item"><a class="nav-link" href="#kelola-pesanan"><i class="bi bi-cart-check me-2"></i> Kelola Pesanan</a></li>
                 <hr class="mx-3 text-secondary">
-                <li class="nav-item"><a class="nav-link text-danger" href="/logout"><i class="bi bi-box-arrow-right me-2"></i> Keluar</a></li>
+                <li class="nav-item"><a class="nav-link text-danger" href="/user/logout"><i class="bi bi-box-arrow-right me-2"></i> Keluar</a></li>
             </ul>
         </nav>
 
