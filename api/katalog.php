@@ -2,7 +2,7 @@
 // katalog.php — Halaman katalog publik (tanpa perlu login)
 // Letakkan di api/user/, route: /katalog
 
-require_once dirname(__DIR__) . '/koneksi.php';
+require_once __DIR__ . '/koneksi.php';
 
 // Ambil produk aktif dari database
 $kategori_filter = isset($_GET['kategori']) ? trim($_GET['kategori']) : '';

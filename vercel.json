@@ -1,70 +1,23 @@
 {
-  "version": 2,
   "functions": {
-    "api/*.php": {
+    "api/**/*.php": {
       "runtime": "vercel-php@0.7.2"
     }
   },
   "routes": [
-    {
-      "src": "^/$",
-      "dest": "/api/index.php"
-    },
-    {
-      "src": "^/login$",
-      "dest": "/api/login.php"
-    },
-    {
-      "src": "^/logout$",
-      "dest": "/api/logout.php"
-    },
-    {
-      "src": "^/register$",
-      "dest": "/api/register.php"
-    },
-    {
-      "src": "^/katalog$",
-      "dest": "/api/user/katalog.php"
-    },
-    {
-      "src": "^/pesan$",
-      "dest": "/api/user/pesan.php"
-    },
-    {
-      "src": "^/beli$",
-      "dest": "/api/beli.php"
-    },
-    {
-      "src": "^/api_bps$",
-      "dest": "/api/api_bps.php"
-    },
-    {
-      "src": "^/user/dashboard$",
-      "dest": "/api/user/dashboard.php"
-    },
-    {
-      "src": "^/user/transaksi$",
-      "dest": "/api/user/transaksi.php"
-    },
-    {
-      "src": "^/user/logout$",
-      "dest": "/api/logout.php"
-    },
-    {
-      "src": "^/admin/dashboard$",
-      "dest": "/api/admin/dashboard.php"
-    },
-    {
-      "src": "^/admin/produk$",
-      "dest": "/api/admin/kelola_produk.php"
-    },
-    {
-      "src": "^/admin/kelola-transaksi$",
-      "dest": "/api/admin/kelola_transaksi.php"
-    },
-    {
-      "src": "^/admin/proses_aksi$",
-      "dest": "/api/proses_aksi.php"
-    }
+    { "src": "/login",                "dest": "/api/login.php" },
+    { "src": "/logout",               "dest": "/api/logout.php" },
+    { "src": "/register",             "dest": "/api/register.php" },
+    { "src": "/katalog",              "dest": "/api/katalog.php" },
+    { "src": "/pesan",                "dest": "/api/pesan.php" },
+    { "src": "/beli",                 "dest": "/api/beli.php" },
+    { "src": "/api_bps",              "dest": "/api/api_bps.php" },
+    { "src": "/proses_aksi",          "dest": "/api/proses_aksi.php" },
+    { "src": "/user/dashboard",       "dest": "/api/user/dashboard.php" },
+    { "src": "/user/transaksi",       "dest": "/api/user/transaksi.php" },
+    { "src": "/admin/dashboard",      "dest": "/api/admin/dashboard.php" },
+    { "src": "/admin/tambah_user",    "dest": "/api/admin/tambah_user.php" },
+    { "src": "/admin/edit_user",      "dest": "/api/admin/edit_user.php" },
+    { "src": "/(.*)",                 "dest": "/api/index.php" }
   ]
 }

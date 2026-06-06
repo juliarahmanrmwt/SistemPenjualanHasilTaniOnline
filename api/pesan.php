@@ -2,8 +2,8 @@
 // pesan.php — Halaman detail & form pemesanan
 // Letakkan di api/user/, route: /pesan?id={id_produk}
 
-require_once dirname(__DIR__) . '/auth_check.php';
-require_once dirname(__DIR__) . '/koneksi.php';
+require_once __DIR__ . '/auth_check.php';
+require_once __DIR__ . '/koneksi.php';
 
 $id_produk = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 if ($id_produk <= 0) { header("Location: /katalog"); exit; }
