@@ -1,14 +1,14 @@
 <?php
 // katalog.php — Halaman katalog publik (tanpa perlu login)
-// Letakkan di api/user/, route: /katalog
+// Route: /katalog
 
 require_once __DIR__ . '/koneksi.php';
 
-// Ambil produk aktif dari database
+// Filter & pencarian
 $kategori_filter = isset($_GET['kategori']) ? trim($_GET['kategori']) : '';
 $search          = isset($_GET['cari'])     ? trim($_GET['cari'])     : '';
 
-$where = "WHERE p.status = 'aktif'";
+$where  = "WHERE p.status = 'aktif'";
 $params = [];
 $types  = '';
 
@@ -24,34 +24,43 @@ if ($search !== '') {
     $types   .= 'ss';
 }
 
-$sql = "SELECT * FROM produk p $where ORDER BY p.dibuat_at DESC";
+$sql  = "SELECT * FROM produk p $where ORDER BY p.dibuat_at DESC";
 $stmt = $koneksi->prepare($sql);
-if ($params) {
-    $stmt->bind_param($types, ...$params);
-}
+if ($params) $stmt->bind_param($types, ...$params);
 $stmt->execute();
 $produk_list = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
 
-// Ambil daftar kategori unik
-$kat_res   = $koneksi->query("SELECT DISTINCT kategori FROM produk WHERE status='aktif' ORDER BY kategori");
+// Kategori unik untuk filter pill
+$kat_res       = $koneksi->query("SELECT DISTINCT kategori FROM produk WHERE status='aktif' ORDER BY kategori");
 $kategori_list = $kat_res ? $kat_res->fetch_all(MYSQLI_ASSOC) : [];
 
 // Cek status login
 ini_set('session.save_path', '/tmp');
 if (session_status() === PHP_SESSION_NONE) session_start();
 
-// Baca cookie session Vercel
 $secret = 'petanigenz_rahasia_123';
 if (isset($_COOKIE['user_session'])) {
     $parts = explode('|', $_COOKIE['user_session']);
     if (count($parts) === 2) {
-        list($data, $signature) = $parts;
+        [$data, $signature] = $parts;
         if (hash_hmac('sha256', $data, $secret) === $signature) {
             $_SESSION = json_decode($data, true);
         }
     }
 }
 $sudah_login = isset($_SESSION['login']) && $_SESSION['login'] === true;
+
+// Helper: warna & ikon placeholder per kategori
+function getKategoriStyle(string $kat): array {
+    return match(strtolower(trim($kat))) {
+        'sayuran'   => ['bg'=>'#EAF3DE','color'=>'#27500A','icon'=>'ti-leaf',    'badge_bg'=>'#EAF3DE','badge_color'=>'#27500A'],
+        'buah'      => ['bg'=>'#FAEEDA','color'=>'#633806','icon'=>'ti-apple',   'badge_bg'=>'#FAEEDA','badge_color'=>'#633806'],
+        'rempah'    => ['bg'=>'#FAECE7','color'=>'#712B13','icon'=>'ti-flame',   'badge_bg'=>'#FAECE7','badge_color'=>'#712B13'],
+        'beras'     => ['bg'=>'#E6F1FB','color'=>'#0C447C','icon'=>'ti-grain',   'badge_bg'=>'#E6F1FB','badge_color'=>'#0C447C'],
+        'umbi'      => ['bg'=>'#FBEAF0','color'=>'#72243E','icon'=>'ti-plant-2', 'badge_bg'=>'#FBEAF0','badge_color'=>'#72243E'],
+        default     => ['bg'=>'#F1EFE8','color'=>'#444441','icon'=>'ti-package', 'badge_bg'=>'#F1EFE8','badge_color'=>'#444441'],
+    };
+}
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -62,12 +71,13 @@ $sudah_login = isset($_SESSION['login']) && $_SESSION['login'] === true;
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 <style>
   :root {
-    --hijau:     #1a6b3c;
-    --hijau-muda:#e8f5ee;
-    --aksen:     #f4a322;
-    --teks:      #1c1c1c;
+    --hijau:      #1a6b3c;
+    --hijau-muda: #EAF3DE;
+    --aksen:      #f4a322;
+    --teks:       #1c1c1c;
   }
   * { box-sizing: border-box; }
   body { font-family: 'DM Sans', sans-serif; background: #fafaf8; color: var(--teks); }
@@ -78,48 +88,104 @@ $sudah_login = isset($_SESSION['login']) && $_SESSION['login'] === true;
 
   /* HERO STRIP */
   .hero-strip {
-    background: linear-gradient(135deg, var(--hijau) 60%, #2d9e5f);
-    color: #fff; padding: 56px 0 40px;
+    background: var(--hijau);
+    color: #fff; padding: 48px 0 36px;
   }
-  .hero-strip h1 { font-family:'Playfair Display',serif; font-size: clamp(2rem,5vw,3rem); }
+  .hero-strip h1 { font-family: 'Playfair Display', serif; font-size: clamp(1.8rem, 4vw, 2.6rem); }
 
   /* FILTER BAR */
-  .filter-bar { background:#fff; border-bottom: 1px solid #e5e5e5; position: sticky; top: 56px; z-index: 100; }
-  .btn-kat {
-    border: 1.5px solid #ccc; background:#fff; border-radius: 30px;
-    padding: 5px 18px; font-size:.875rem; transition:.2s;
+  .filter-bar {
+    background: #fff; border-bottom: 1px solid #e5e5e5;
+    position: sticky; top: 56px; z-index: 100;
   }
-  .btn-kat.active, .btn-kat:hover { background:var(--hijau); color:#fff; border-color:var(--hijau); }
+  .btn-kat {
+    border: 1px solid #ccc; background: #fff; border-radius: 30px;
+    padding: 5px 16px; font-size: .85rem; transition: .2s; cursor: pointer;
+    text-decoration: none; color: var(--teks);
+  }
+  .btn-kat.active, .btn-kat:hover {
+    background: var(--hijau); color: #fff; border-color: var(--hijau);
+  }
 
-  /* CARD PRODUK */
+  /* PRODUK CARD */
   .prod-card {
     background: #fff; border-radius: 16px; overflow: hidden;
-    box-shadow: 0 2px 12px rgba(0,0,0,.06); transition: transform .25s, box-shadow .25s;
+    border: 1px solid #eee;
+    transition: transform .25s, box-shadow .25s;
     display: flex; flex-direction: column; height: 100%;
+    position: relative;
   }
-  .prod-card:hover { transform: translateY(-6px); box-shadow: 0 12px 32px rgba(0,0,0,.13); }
-  .prod-card img { width:100%; height:200px; object-fit:cover; }
-  .prod-card .badge-kat {
-    display: inline-block; background: var(--hijau-muda); color: var(--hijau);
-    font-size:.72rem; font-weight:600; letter-spacing:.04em; text-transform:uppercase;
-    padding:3px 12px; border-radius:30px; margin-bottom:6px;
+  .prod-card:hover { transform: translateY(-6px); box-shadow: 0 12px 32px rgba(0,0,0,.10); }
+
+  /* GAMBAR & PLACEHOLDER */
+  .card-img-top {
+    width: 100%; height: 200px; object-fit: cover; display: block;
   }
-  .prod-card .harga { font-size:1.2rem; font-weight:700; color: var(--hijau); }
-  .prod-card .stok  { font-size:.8rem; color:#888; }
-  .prod-card .card-body { padding:18px; flex:1; display:flex; flex-direction:column; }
+  .card-img-top.img-habis { filter: grayscale(.5); }
+  .card-placeholder {
+    width: 100%; height: 200px;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 8px;
+  }
+  .card-placeholder.img-habis { filter: grayscale(.5); }
+  .card-placeholder i { font-size: 2.8rem; }
+  .card-placeholder span { font-size: .75rem; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; }
+
+  /* BADGE OVERLAY */
+  .badge-overlay {
+    position: absolute; top: 10px; left: 10px;
+    font-size: .68rem; font-weight: 600;
+    padding: 3px 10px; border-radius: 20px;
+    text-transform: uppercase; letter-spacing: .04em; z-index: 1;
+  }
+  .badge-new   { background: #FAEEDA; color: #633806; }
+  .badge-habis { background: rgba(0,0,0,.5); color: #fff; }
+
+  /* BADGE KATEGORI */
+  .badge-kat {
+    display: inline-block; font-size: .68rem; font-weight: 600;
+    text-transform: uppercase; letter-spacing: .04em;
+    padding: 3px 10px; border-radius: 30px; margin-bottom: 5px;
+  }
+
+  /* BODY KARTU */
+  .prod-card .card-body { padding: 14px 16px 16px; flex: 1; display: flex; flex-direction: column; }
+  .prod-card .prod-name { font-size: .92rem; font-weight: 600; margin: 0 0 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .prod-card .prod-desc { font-size: .78rem; color: #888; margin: 0 0 8px; line-height: 1.4; }
+  .prod-card .harga { color: var(--hijau); font-weight: 700; font-size: 1.1rem; margin-bottom: 4px; }
+  .prod-card .harga small { font-size: .75rem; font-weight: 400; color: #999; }
+
+  /* STOK INDIKATOR */
+  .stok-row { display: flex; align-items: center; gap: 6px; font-size: .78rem; color: #888; margin-bottom: 10px; }
+  .stok-dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
+  .dot-ok   { background: #3B6D11; }
+  .dot-low  { background: #BA7517; }
+  .dot-out  { background: #A32D2D; }
+
+  /* TOMBOL */
   .btn-pesan {
-    background: var(--hijau); color:#fff; border:none; border-radius:30px;
-    padding:9px 0; font-weight:600; width:100%; margin-top:auto; transition:.2s;
+    background: var(--hijau); color: #fff; border: none;
+    border-radius: 30px; padding: 9px 0; font-weight: 600; font-size: .85rem;
+    width: 100%; margin-top: auto; transition: .2s;
+    text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 6px;
   }
-  .btn-pesan:hover { background: #145a31; color:#fff; }
-  .btn-pesan-login {
-    background: var(--aksen); color:#fff; border:none; border-radius:30px;
-    padding:9px 0; font-weight:600; width:100%; margin-top:auto; transition:.2s;
+  .btn-pesan:hover { background: #145a31; color: #fff; }
+  .btn-login {
+    background: var(--aksen); color: #412402; border: none;
+    border-radius: 30px; padding: 9px 0; font-weight: 600; font-size: .85rem;
+    width: 100%; margin-top: auto; transition: .2s;
+    text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 6px;
+  }
+  .btn-login:hover { background: #d48f1a; color: #412402; }
+  .btn-habis {
+    background: #e8e8e8; color: #aaa; border: none;
+    border-radius: 30px; padding: 9px 0; font-weight: 600; font-size: .85rem;
+    width: 100%; margin-top: auto; cursor: not-allowed;
   }
 
   /* KOSONG */
-  .kosong { text-align:center; padding: 80px 0; color:#aaa; }
-  .kosong i { font-size: 4rem; display:block; margin-bottom:16px; }
+  .kosong { text-align: center; padding: 80px 0; color: #aaa; }
+  .kosong i { font-size: 4rem; display: block; margin-bottom: 16px; }
 </style>
 </head>
 <body>
@@ -157,8 +223,6 @@ $sudah_login = isset($_SESSION['login']) && $_SESSION['login'] === true;
   <div class="container">
     <h1 class="mb-2">🌿 Katalog Produk Segar</h1>
     <p class="opacity-75 mb-4">Temukan produk pertanian berkualitas langsung dari petani lokal.</p>
-
-    <!-- Search -->
     <form method="GET" action="/katalog" class="d-flex gap-2" style="max-width:500px;">
       <?php if ($kategori_filter): ?>
         <input type="hidden" name="kategori" value="<?= htmlspecialchars($kategori_filter) ?>">
@@ -194,36 +258,80 @@ $sudah_login = isset($_SESSION['login']) && $_SESSION['login'] === true;
       <a href="/katalog" class="btn btn-outline-success rounded-pill">Lihat Semua Produk</a>
     </div>
   <?php else: ?>
-    <p class="text-muted mb-4">Menampilkan <strong><?= count($produk_list) ?></strong> produk<?= $kategori_filter ? ' — Kategori: <strong>'.htmlspecialchars($kategori_filter).'</strong>' : '' ?><?= $search ? ' — Pencarian: <strong>'.htmlspecialchars($search).'</strong>' : '' ?></p>
+    <p class="text-muted mb-4">
+      Menampilkan <strong><?= count($produk_list) ?></strong> produk
+      <?= $kategori_filter ? ' — Kategori: <strong>'.htmlspecialchars($kategori_filter).'</strong>' : '' ?>
+      <?= $search ? ' — Pencarian: <strong>'.htmlspecialchars($search).'</strong>' : '' ?>
+    </p>
     <div class="row g-4">
-      <?php foreach ($produk_list as $p): ?>
+      <?php foreach ($produk_list as $p):
+        $ks      = getKategoriStyle($p['kategori']);
+        $isNew   = strtotime($p['dibuat_at']) > strtotime('-7 days');
+        $stokLow = $p['stok'] > 0 && $p['stok'] <= 10;
+        $habis   = (int)$p['stok'] <= 0;
+      ?>
       <div class="col-12 col-sm-6 col-lg-3">
         <div class="prod-card">
+
+          <?php if ($habis): ?>
+            <span class="badge-overlay badge-habis">Habis</span>
+          <?php elseif ($isNew): ?>
+            <span class="badge-overlay badge-new">Baru</span>
+          <?php endif; ?>
+
           <?php if ($p['foto_url']): ?>
-            <img src="<?= htmlspecialchars($p['foto_url']) ?>" alt="<?= htmlspecialchars($p['nama']) ?>" loading="lazy">
+            <img
+              src="<?= htmlspecialchars($p['foto_url']) ?>"
+              alt="<?= htmlspecialchars($p['nama']) ?>"
+              class="card-img-top<?= $habis ? ' img-habis' : '' ?>"
+              loading="lazy"
+              onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+            <div class="card-placeholder<?= $habis ? ' img-habis' : '' ?>"
+                 style="display:none;background:<?= $ks['bg'] ?>;color:<?= $ks['color'] ?>">
+              <i class="ti <?= $ks['icon'] ?>" aria-hidden="true"></i>
+              <span><?= htmlspecialchars($p['kategori']) ?></span>
+            </div>
           <?php else: ?>
-            <div style="height:200px;background:#e8f5ee;display:flex;align-items:center;justify-content:center;font-size:3rem;">🌿</div>
+            <div class="card-placeholder<?= $habis ? ' img-habis' : '' ?>"
+                 style="background:<?= $ks['bg'] ?>;color:<?= $ks['color'] ?>">
+              <i class="ti <?= $ks['icon'] ?>" aria-hidden="true"></i>
+              <span><?= htmlspecialchars($p['kategori']) ?></span>
+            </div>
           <?php endif; ?>
 
           <div class="card-body">
-            <span class="badge-kat"><?= htmlspecialchars($p['kategori']) ?></span>
-            <h5 class="fw-bold mb-1"><?= htmlspecialchars($p['nama']) ?></h5>
-            <p class="text-muted small mb-2" style="line-height:1.4"><?= htmlspecialchars(mb_substr($p['deskripsi'],0,70)) ?>...</p>
-            <div class="harga mb-1">Rp <?= number_format($p['harga'],0,',','.') ?> <small class="text-muted fw-normal fs-6">/ <?= htmlspecialchars($p['satuan']) ?></small></div>
-            <p class="stok mb-3"><i class="bi bi-box-seam me-1"></i>Stok: <?= (int)$p['stok'] ?> <?= htmlspecialchars($p['satuan']) ?></p>
+            <span class="badge-kat" style="background:<?= $ks['badge_bg'] ?>;color:<?= $ks['badge_color'] ?>">
+              <?= htmlspecialchars($p['kategori']) ?>
+            </span>
+            <p class="prod-name"><?= htmlspecialchars($p['nama']) ?></p>
+            <p class="prod-desc"><?= htmlspecialchars(mb_substr($p['deskripsi'], 0, 70)) ?>...</p>
+            <div class="harga">
+              Rp <?= number_format($p['harga'], 0, ',', '.') ?>
+              <small>/ <?= htmlspecialchars($p['satuan']) ?></small>
+            </div>
+            <div class="stok-row">
+              <?php if ($habis): ?>
+                <span class="stok-dot dot-out"></span> Stok habis
+              <?php elseif ($stokLow): ?>
+                <span class="stok-dot dot-low"></span> Sisa <?= (int)$p['stok'] ?> <?= htmlspecialchars($p['satuan']) ?> (menipis)
+              <?php else: ?>
+                <span class="stok-dot dot-ok"></span> Stok: <?= (int)$p['stok'] ?> <?= htmlspecialchars($p['satuan']) ?>
+              <?php endif; ?>
+            </div>
 
-            <?php if ($p['stok'] <= 0): ?>
-              <button class="btn-pesan" disabled style="background:#ccc;cursor:not-allowed;">Stok Habis</button>
+            <?php if ($habis): ?>
+              <button class="btn-habis" disabled>Stok Habis</button>
             <?php elseif ($sudah_login): ?>
-              <a href="/pesan?id=<?= (int)$p['id'] ?>" class="btn-pesan text-center text-decoration-none d-block">
-                <i class="bi bi-cart-plus me-1"></i> Pesan Sekarang
+              <a href="/pesan?id=<?= (int)$p['id'] ?>" class="btn-pesan">
+                <i class="ti ti-shopping-cart" aria-hidden="true"></i> Pesan Sekarang
               </a>
             <?php else: ?>
-              <a href="/login?redirect=/katalog" class="btn-pesan-login text-center text-decoration-none d-block">
-                <i class="bi bi-person-lock me-1"></i> Login untuk Memesan
+              <a href="/login?redirect=/katalog" class="btn-login">
+                <i class="ti ti-lock" aria-hidden="true"></i> Login untuk Memesan
               </a>
             <?php endif; ?>
           </div>
+
         </div>
       </div>
       <?php endforeach; ?>
