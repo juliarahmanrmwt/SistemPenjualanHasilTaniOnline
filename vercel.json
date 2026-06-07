@@ -5,19 +5,24 @@
     }
   },
   "routes": [
-    { "src": "/login",                "dest": "/api/login.php" },
-    { "src": "/logout",               "dest": "/api/logout.php" },
-    { "src": "/register",             "dest": "/api/register.php" },
-    { "src": "/katalog",              "dest": "/api/katalog.php" },
-    { "src": "/pesan",                "dest": "/api/pesan.php" },
-    { "src": "/beli",                 "dest": "/api/beli.php" },
-    { "src": "/api_bps",              "dest": "/api/api_bps.php" },
-    { "src": "/proses_aksi",          "dest": "/api/proses_aksi.php" },
-    { "src": "/user/dashboard",       "dest": "/api/user/dashboard.php" },
-    { "src": "/user/transaksi",       "dest": "/api/user/transaksi.php" },
-    { "src": "/admin/dashboard",      "dest": "/api/admin/dashboard.php" },
-    { "src": "/admin/tambah_user",    "dest": "/api/admin/tambah_user.php" },
-    { "src": "/admin/edit_user",      "dest": "/api/admin/edit_user.php" },
-    { "src": "/(.*)",                 "dest": "/api/index.php" }
+    { "src": "/login",                    "dest": "/api/login.php" },
+    { "src": "/logout",                   "dest": "/api/logout.php" },
+    { "src": "/register",                 "dest": "/api/register.php" },
+    { "src": "/katalog",                  "dest": "/api/katalog.php" },
+    { "src": "/pesan",                    "dest": "/api/pesan.php" },
+    { "src": "/beli",                     "dest": "/api/beli.php" },
+    { "src": "/api_bps",                  "dest": "/api/api_bps.php" },
+    { "src": "/proses_aksi",              "dest": "/api/proses_aksi.php" },
+    { "src": "/user/dashboard",           "dest": "/api/user/dashboard.php" },
+    { "src": "/user/transaksi",           "dest": "/api/user/transaksi.php" },
+    { "src": "/admin/dashboard",          "dest": "/api/admin/dashboard.php" },
+    { "src": "/admin/tambah_user",        "dest": "/api/admin/tambah_user.php" },
+    { "src": "/admin/edit_user",          "dest": "/api/admin/edit_user.php" },
+    { "src": "/penjual/dashboard",        "dest": "/api/penjual/dashboard.php" },
+    { "src": "/penjual/produk_tambah",    "dest": "/api/penjual/produk_tambah.php" },
+    { "src": "/penjual/produk_edit",      "dest": "/api/penjual/produk_edit.php" },
+    { "src": "/penjual/produk_hapus",     "dest": "/api/penjual/produk_hapus.php" },
+    { "src": "/penjual/pesanan",          "dest": "/api/penjual/pesanan.php" },
+    { "src": "/(.*)",                     "dest": "/api/index.php" }
   ]
 }
