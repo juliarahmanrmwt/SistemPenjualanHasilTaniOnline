@@ -115,34 +115,6 @@ $psr_selesai = $psr_stat['Selesai'] ?? 0;
     </div>
   </div>
 
-  <!-- MINI STAT PESANAN -->
-  <div class="row g-3 mb-4">
-    <div class="col-6 col-md-3">
-      <div class="mini-stat">
-        <div class="angka text-warning"><?= $psr_aktif ?></div>
-        <div class="text-muted small">Pesanan Aktif</div>
-      </div>
-    </div>
-    <div class="col-6 col-md-3">
-      <div class="mini-stat">
-        <div class="angka text-success"><?= $psr_selesai ?></div>
-        <div class="text-muted small">Selesai</div>
-      </div>
-    </div>
-    <div class="col-6 col-md-3">
-      <div class="mini-stat">
-        <div class="angka text-success"><?= count($produk_list) ?>+</div>
-        <div class="text-muted small">Produk Tersedia</div>
-      </div>
-    </div>
-    <div class="col-6 col-md-3">
-      <div class="mini-stat">
-        <div class="angka" style="color:var(--aksen)">🚜</div>
-        <div class="text-muted small">Dari Petani Lokal</div>
-      </div>
-    </div>
-  </div>
-
   <!-- PRODUK UNGGULAN -->
   <div class="d-flex justify-content-between align-items-center mb-3">
     <h5 class="fw-bold mb-0">🛒 Produk Unggulan</h5>
