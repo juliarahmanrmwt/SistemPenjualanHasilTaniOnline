@@ -40,7 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['pesan'])) {
             "INSERT INTO pesanan (id_pesanan, nama_pembeli, id_produk, nama_produk, harga, jumlah, total_harga, catatan, status)
              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
         );
-        $ins->bind_param("ssiidiisd",
+        $ins->bind_param("ssisiiiss",
             $id_pesanan, $nama_user, $id_produk, $nama_produk,
             $harga_unit, $jumlah, $total, $catatan, $status
         );
