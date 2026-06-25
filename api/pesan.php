@@ -29,7 +29,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['pesan'])) {
         $error = "Jumlah melebihi stok tersedia ({$produk['stok']} {$produk['satuan']}).";
     } else {
         $total       = $produk['harga'] * $jumlah;
-        $id_pesanan  = 'PG' . date('ymd') . rand(1000,9999);
+        // id_pesanan harus berupa INT (sesuai struktur tabel).
+        // Gabungan timestamp (detik, 6 digit terakhir) + random 3 digit
+        // supaya tetap muat di INT dan sangat kecil kemungkinan duplikat.
+        $id_pesanan  = (int)(substr((string)time(), -6) . rand(100, 999));
         $nama_user   = $_SESSION['nama'];
         $nama_produk = $produk['nama'];
         $harga_unit  = $produk['harga'];
@@ -40,7 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['pesan'])) {
             "INSERT INTO pesanan (id_pesanan, nama_pembeli, id_produk, nama_produk, harga, jumlah, total_harga, catatan, status)
              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
         );
-        $ins->bind_param("ssisiiiss",
+        $ins->bind_param("isisiiiss",
             $id_pesanan, $nama_user, $id_produk, $nama_produk,
             $harga_unit, $jumlah, $total, $catatan, $status
         );
